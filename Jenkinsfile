@@ -46,7 +46,7 @@ node {
           //sh 'npm config set password $passwordVariable'
       //    sh 'npm publish --registry "https://tv2.jfrog.io/tv2/api/npm/npm-local"'
         def server = Artifactory.server conf['jfrog-account-name']
-        def buildInfo = server.newBuildInfo()
+        def buildInfo = Artifactory.newBuildInfo()
         buildInfo.retention maxBuilds: 5, deleteBuildArtifacts: true, async: true
         buildInfo.name = conf['product']
         buildInfo.number = conf['build-number']
