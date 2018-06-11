@@ -95,8 +95,9 @@ export default class {
       // Send the resolve stat
       const statResolve = err => {
         let tags = [];
-        if (fieldInfo.statsdTags)
+        if (fieldInfo.statsdTags) {
           tags = tags.concat(fieldInfo.statsdTags);
+        }
 
         if (err) {
           // In case Apollo Error is used, send the err.data.type
@@ -117,7 +118,10 @@ export default class {
           tags
         );
         if (err) {
-          this.statsdClient.increment('resolve_error', 1, this.sampleRate, tags);
+          this.statsdClient.increment('resolve_error',
+           1,
+           this.sampleRate,
+           tags);
         }
       };
 
@@ -202,8 +206,10 @@ export default class {
    * @param config object that can hold:
    *   - tagQueryHash: if true metrics will be tagged with queryHash
    *   - tagOperationName: if true metrics will be tagged with operationName
-   *   if config is not available, metrics will be tagged with queryHash and operationName
-   *   if config is available metrics will only be tagged with available options, missing options is equivalent to false
+   *   if config is not available,
+   *   metrics will be tagged with queryHash and operationName
+   *   if config is available metrics will only be tagged
+   *   with available options, missing options is equivalent to false
    * @return function
    */
   getExpressMiddleware(config) {
@@ -217,11 +223,13 @@ export default class {
       var tags = [];
 
       if (!config || config.tagQueryHash) {
-        tags.push(format('queryHash:%s', req.graphqlStatsdContext.queryHash))
+        tags.push(format('queryHash:%s',
+        req.graphqlStatsdContext.queryHash));
       }
 
       if (!config || config.tagOperationName) {
-        tags.push(format('operationName:%s', req.graphqlStatsdContext.operationName))
+        tags.push(format('operationName:%s',
+        req.graphqlStatsdContext.operationName));
       }
 
       onFinished(res, () => {

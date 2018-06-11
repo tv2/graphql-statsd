@@ -6,21 +6,25 @@ node {
       checkout scm
     }
 
-      //def packageJson = readJSON file:'package.json'
-      //echo releaseName
-      //packageJson.version = releaseName.toString()
-      //writeJSON file: 'package.json', json: packageJson    
+    def buildProps = readProperties file: 'build.properties'
 
-      conf = [
-        "major": "1",
-        "minor": "6"
-      ]
-      config(conf)
-      printConfig(conf)
+    conf = [
+      "major": "${buildProps['major']}",
+      "minor": "${buildProps['minor']}"
+    ]
+    config(conf)
+    printConfig(conf)
 
-    def nodeBuilder = docker.image('tv2-devops-docker-production.jfrog.io/buildtools-node-builder:latest') //
+    def releaseName = conf['version']
 
-    //https://tv2.jfrog.io/tv2/devops-docker-production/buildtools-node-builder
+    stage('Set Version') {
+      def packageJson = readJSON file:'package.json'
+      echo releaseName
+      packageJson.version = releaseName.toString()
+      writeJSON file: 'package.json', json: packageJson
+    }
+
+    def nodeBuilder = docker.image('tv2-devops-docker-production.jfrog.io/buildtools-node-builder:latest')
 
     nodeBuilder.pull()
     nodeBuilder.inside() {
@@ -29,7 +33,7 @@ node {
       }
 
       stage('Unit Test') {
-        //sh 'npm run test'
+        sh 'npm run test'
       }
 
       stage('Package') {
@@ -37,22 +41,10 @@ node {
       }
 
       stage('Publish to Artifactory') {
-        def server = Artifactory.server conf['jfrog-account-name']
-        def buildInfo = Artifactory.newBuildInfo()
-        buildInfo.retention maxBuilds: 5, deleteBuildArtifacts: true, async: true
-        buildInfo.name = conf['product']
-        buildInfo.number = conf['build-number']
-        def uploadSpec = """{
-          "files": [
-              {
-                "pattern": "*.tgz",
-                "target": "npm/dk/tv2/play/backend/statsd/play-lib-graphql-statsd/"
-              }
-            ]
-          }"""
-          server.upload spec: uploadSpec, buildInfo: buildInfo
-          server.publishBuildInfo buildInfo
-
+        conf['maxBuilds'] = 5
+        conf['archive-name'] = "*.tgz"
+        conf['repository'] = "npm/dk/tv2/play/backend/statsd/play-lib-graphql-statsd/"
+        publishToArtifactory(conf)
         }
       }
     
