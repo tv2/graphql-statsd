@@ -6,7 +6,9 @@ node {
       checkout scm
     }
 
-    def nodeBuilder = docker.image('tv2-devops-docker-production.jfrogs.io/buildtools-node-builder') //
+    def nodeBuilder = docker.image('tv2-devops-docker-production.jfrog.io/buildtools-node-builder:latest') //
+
+    //https://tv2.jfrog.io/tv2/devops-docker-production/buildtools-node-builder
 
     nodeBuilder.pull()
     nodeBuilder.inside() {
