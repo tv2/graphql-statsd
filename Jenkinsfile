@@ -54,7 +54,7 @@ node {
           "files": [
               {
                 "pattern": "*.tgz",
-                "target": "libs-release-local/dk/tv2/play/backend/statsd/graphql-statsd/"
+                "target": "libs-release-local/dk/tv2/play/backend/statsd/graphql-statsd"
               }
             ]
           }"""
