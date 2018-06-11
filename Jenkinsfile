@@ -6,16 +6,16 @@ node {
       checkout scm
     }
 
-    def nodeBuilder = docker.image('node:10.4')
+    def nodeBuilder = docker.image('tv2-devops-docker-production.jfrogs.io/buildtools-node-builder') //
 
     nodeBuilder.pull()
-    nodeBuilder.inside("-u root:root") {
+    nodeBuilder.inside() {
       stage('Build') {
         sh 'npm install'
       }
 
       stage('Unit Test') {
-        sh 'npm run test'
+        //sh 'npm run test'
       }
 
       stage('Publish to Artifactory') {
