@@ -6,12 +6,17 @@ node {
       checkout scm
     }
 
-    conf = [
-      "major": "${gradleProps['major']}",
-      "minor": "${gradleProps['minor']}"
-    ]
-    config(conf)
-    printConfig(conf)
+      //def packageJson = readJSON file:'package.json'
+      //echo releaseName
+      //packageJson.version = releaseName.toString()
+      //writeJSON file: 'package.json', json: packageJson    
+
+      conf = [
+        "major": "1",
+        "minor": "6"
+      ]
+      config(conf)
+      printConfig(conf)
 
     def nodeBuilder = docker.image('tv2-devops-docker-production.jfrog.io/buildtools-node-builder:latest') //
 
@@ -58,7 +63,7 @@ node {
 
         }
       }
-    }
+    
 
   } catch(Exception e) {
     sendNotificationFailed('jems', e)
