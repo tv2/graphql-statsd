@@ -8,8 +8,8 @@ node {
 
     def nodeBuilder = docker.image('node:9.11.1-slim')
 
-    builder.pull()
-    builder.inside() {
+    nodeBuilder.pull()
+    nodeBuilder.inside() {
       stage('Build') {
         sh 'npm install'
       }
