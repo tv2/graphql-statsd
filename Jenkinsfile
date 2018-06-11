@@ -23,9 +23,9 @@ node {
           // set URL to registry and publish with credentials
           // npm set login
           // npm publish --registry 'https://tv2.jfrog.io/tv2/api/npm/npm-local/'
-          sh 'npm config set username $userVariable'
-          sh 'npm config set password $passwordVariable'
-          sh 'npm publish --registry "https://tv2.jfrog.io/tv2/api/npm/npm-local"'
+          sh 'sudo npm config set username $userVariable'
+          sh 'sudo npm config set password $passwordVariable'
+          sh 'sudo npm publish --registry "https://tv2.jfrog.io/tv2/api/npm/npm-local"'
         }
       }
     }
