@@ -11,11 +11,11 @@ node {
     nodeBuilder.pull()
     nodeBuilder.inside() {
       stage('Build') {
-        sh 'npm install'
+        sh 'sudo npm install'
       }
 
       stage('Unit Test') {
-        sh 'npm run test'
+        sh 'sudo npm run test'
       }
 
       stage('Publish to Artifactory') {
