@@ -6,16 +6,16 @@ node {
       checkout scm
     }
 
-    def nodeBuilder = docker.image('node:9.11.1-slim')
+    def nodeBuilder = docker.image('node:10.4')
 
     nodeBuilder.pull()
     nodeBuilder.inside() {
       stage('Build') {
-        sh 'sudo npm install'
+        sh 'npm install'
       }
 
       stage('Unit Test') {
-        sh 'sudo npm run test'
+        sh 'npm run test'
       }
 
       stage('Publish to Artifactory') {
@@ -23,9 +23,9 @@ node {
           // set URL to registry and publish with credentials
           // npm set login
           // npm publish --registry 'https://tv2.jfrog.io/tv2/api/npm/npm-local/'
-          sh 'sudo npm config set username $userVariable'
-          sh 'sudo npm config set password $passwordVariable'
-          sh 'sudo npm publish --registry "https://tv2.jfrog.io/tv2/api/npm/npm-local"'
+          sh 'npm config set username $userVariable'
+          sh 'npm config set password $passwordVariable'
+          sh 'npm publish --registry "https://tv2.jfrog.io/tv2/api/npm/npm-local"'
         }
       }
     }
