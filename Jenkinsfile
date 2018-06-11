@@ -6,6 +6,13 @@ node {
       checkout scm
     }
 
+    conf = [
+      "major": "${gradleProps['major']}",
+      "minor": "${gradleProps['minor']}"
+    ]
+    config(conf)
+    printConfig(conf)
+
     def nodeBuilder = docker.image('tv2-devops-docker-production.jfrog.io/buildtools-node-builder:latest') //
 
     //https://tv2.jfrog.io/tv2/devops-docker-production/buildtools-node-builder
@@ -20,15 +27,35 @@ node {
         //sh 'npm run test'
       }
 
+      stage('Package') {
+        sh 'npm pack'
+      }
+
       stage('Publish to Artifactory') {
-        withCredentials([usernamePassword(credentialsId: 'ci-arti-saas', usernameVariable: 'userVariable', passwordVariable: 'passwordVariable')]) {
+      //  withCredentials([usernamePassword(credentialsId: 'ci-arti-saas', usernameVariable: 'userVariable', passwordVariable: 'passwordVariable')]) {
           // set URL to registry and publish with credentials
           // npm set login
           // npm publish --registry 'https://tv2.jfrog.io/tv2/api/npm/npm-local/'
-          sh 'echo > "_auth = ${userVariable}:${password}"\n email = playbackend@tv2.dk \n always-auth = true"'
+      //    sh 'echo > "_auth = ${userVariable}:${password}"\n email = playbackend@tv2.dk \n always-auth = true"'
           //sh 'npm config set username $userVariable'
           //sh 'npm config set password $passwordVariable'
-          sh 'npm publish --registry "https://tv2.jfrog.io/tv2/api/npm/npm-local"'
+      //    sh 'npm publish --registry "https://tv2.jfrog.io/tv2/api/npm/npm-local"'
+        def server = Artifactory.server map['jfrog-account-name']
+        def buildInfo = server.newBuildInfo()
+        buildInfo.retention maxBuilds: 5, deleteBuildArtifacts: true, async: true
+        buildInfo.name = conf['product']
+        buildInfo.number = conf['build-number']
+        def uploadSpec = """{
+          "files": [
+              {
+                "pattern": "*.tgz",
+                "target": "npm-local"
+              }
+            ]
+          }"""
+          server.upload spec: uploadSpec, buildInfo: buildInfo
+          server.publishBuildInfo buildInfo
+
         }
       }
     }
