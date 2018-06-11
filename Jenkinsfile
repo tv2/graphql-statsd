@@ -9,7 +9,7 @@ node {
     def nodeBuilder = docker.image('node:10.4')
 
     nodeBuilder.pull()
-    nodeBuilder.inside() {
+    nodeBuilder.inside("-u root:root") {
       stage('Build') {
         sh 'npm install'
       }
