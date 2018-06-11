@@ -6,21 +6,6 @@ node {
       checkout scm
     }
 
-    def buildProps = readProperties file: 'build.properties'
-
-    conf = [
-      "major": "${buildProps['major']}"
-      "minor": "${buildProps['minor']}"
-    ]
-
-    def releaseName = conf['version']
-
-    stage('Set Version') {
-      def packageJson = readJson file: 'package.json'
-      package.version = releaseName.toString()
-      writeJSON file: 'package.json', json: packageJson
-    }
-
     def nodeBuilder = docker.image('node:9.11.1-slim')
 
     builder.pull()
@@ -44,7 +29,7 @@ node {
         }
       }
     }
-    
+
   } catch(Exception e) {
     sendNotificationFailed('jems', e)
   }
