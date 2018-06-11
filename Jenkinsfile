@@ -37,14 +37,6 @@ node {
       }
 
       stage('Publish to Artifactory') {
-      //  withCredentials([usernamePassword(credentialsId: 'ci-arti-saas', usernameVariable: 'userVariable', passwordVariable: 'passwordVariable')]) {
-          // set URL to registry and publish with credentials
-          // npm set login
-          // npm publish --registry 'https://tv2.jfrog.io/tv2/api/npm/npm-local/'
-      //    sh 'echo > "_auth = ${userVariable}:${password}"\n email = playbackend@tv2.dk \n always-auth = true"'
-          //sh 'npm config set username $userVariable'
-          //sh 'npm config set password $passwordVariable'
-      //    sh 'npm publish --registry "https://tv2.jfrog.io/tv2/api/npm/npm-local"'
         def server = Artifactory.server conf['jfrog-account-name']
         def buildInfo = Artifactory.newBuildInfo()
         buildInfo.retention maxBuilds: 5, deleteBuildArtifacts: true, async: true
@@ -54,7 +46,7 @@ node {
           "files": [
               {
                 "pattern": "*.tgz",
-                "target": "libs-release-local/dk/tv2/play/backend/statsd/graphql-statsd"
+                "target": "npm/dk/tv2/play/backend/statsd/play-lib-graphql-statsd/"
               }
             ]
           }"""
