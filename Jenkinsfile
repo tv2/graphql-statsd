@@ -25,7 +25,7 @@ node {
           // set URL to registry and publish with credentials
           // npm set login
           // npm publish --registry 'https://tv2.jfrog.io/tv2/api/npm/npm-local/'
-          sh 'echo > "_auth = ${userVariable}:${password}"\nemail = playbackend@tv2.dk\nalways-auth = true'
+          sh 'echo > "_auth = ${userVariable}:${password}"\n email = playbackend@tv2.dk \n always-auth = true"'
           //sh 'npm config set username $userVariable'
           //sh 'npm config set password $passwordVariable'
           sh 'npm publish --registry "https://tv2.jfrog.io/tv2/api/npm/npm-local"'
