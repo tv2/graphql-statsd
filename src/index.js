@@ -85,9 +85,7 @@ export default class {
   decorateResolver(resolver, fieldInfo) {
     return (p, a, ctx, resolverInfo) => {
       const resolveTimer = clockit.start();
-      const context = ctx.graphqlStatsdContext ?
-       ctx.graphqlStatsdContext : undefined;
-
+      const context = ctx.graphqlStatsdContext ? ctx.graphqlStatsdContext : undefined;
       if (!context) {
         console.warn('graphqlStatsd: Context is undefined!');
       }
@@ -105,6 +103,9 @@ export default class {
         }
 
         if (context) {
+          if (Array.isArray(context.queries)) {
+            context.operationName = context.queries[context.queryHash].operationName;
+          }
           tags.push(format('queryHash:%s', context.queryHash));
           tags.push(format('operationName:%s', context.operationName));
         }
@@ -172,6 +173,7 @@ export default class {
         return result;
       }
 
+      statResolve();
       return result;
     };
   }
@@ -216,20 +218,40 @@ export default class {
     return (req, res, next) => {
       const timer = clockit.start();
 
-      req.graphqlStatsdContext = {
-        queryHash: req.body.query ? md5(req.body.query) : null,
-        operationName: req.body.operationName ? req.body.operationName : null
-      };
-      var tags = [];
+      let tagQueryHash = [];
+      let tagOperationName = [];
 
-      if (!config || config.tagQueryHash) {
-        tags.push(format('queryHash:%s',
-        req.graphqlStatsdContext.queryHash));
+      // In case the incoming body is bundled queries.
+      if (Array.isArray(req.body)) {
+        req.graphqlStatsdContext = {};
+        req.graphqlStatsdContext.queries = [];
+        req.body.forEach(queryObject => {
+          queryObject.queryHash = md5(queryObject.query);
+          req.graphqlStatsdContext.queries[queryObject.queryHash] = queryObject;
+
+          tagQueryHash.push(queryObject.queryHash);
+          tagOperationName.push(queryObject.operationName);
+        });
+      } else {
+        req.graphqlStatsdContext = {
+          queryHash: req.body.query ? md5(req.body.query) : null,
+          operationName: req.body.operationName ? req.body.operationName : null
+        };
+
+        tagQueryHash.push(req.graphqlStatsdContext.queryHash);
+        tagOperationName.push(req.graphqlStatsdContext.operationName);
       }
 
-      if (!config || config.tagOperationName) {
+      var tags = [];
+
+      if (!config || tagQueryHash) {
+        tags.push(format('queryHash:%s',
+        tagQueryHash.join('|'));
+      }
+
+      if (!config || tagOperationName) {
         tags.push(format('operationName:%s',
-        req.graphqlStatsdContext.operationName));
+        tagOperationName.join('|'));
       }
 
       onFinished(res, () => {
