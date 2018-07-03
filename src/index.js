@@ -85,7 +85,8 @@ export default class {
   decorateResolver(resolver, fieldInfo) {
     return (p, a, ctx, resolverInfo) => {
       const resolveTimer = clockit.start();
-      const context = ctx.graphqlStatsdContext ? ctx.graphqlStatsdContext : undefined;
+      const context = ctx.graphqlStatsdContext ?
+          ctx.graphqlStatsdContext : undefined;
       if (!context) {
         console.warn('graphqlStatsd: Context is undefined!');
       }
@@ -104,7 +105,9 @@ export default class {
 
         if (context) {
           if (Array.isArray(context.queries)) {
-            context.operationName = context.queries[context.queryHash].operationName;
+            context.operationName = context
+                .queries[context.queryHash]
+                .operationName;
           }
           tags.push(format('queryHash:%s', context.queryHash));
           tags.push(format('operationName:%s', context.operationName));
@@ -246,12 +249,12 @@ export default class {
 
       if (!config || tagQueryHash) {
         tags.push(format('queryHash:%s',
-        tagQueryHash.join('|'))
+        tagQueryHash.join('|')));
       }
 
       if (!config || tagOperationName) {
         tags.push(format('operationName:%s',
-        tagOperationName.join('|'))
+        tagOperationName.join('|')));
       }
 
       onFinished(res, () => {
