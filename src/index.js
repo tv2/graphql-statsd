@@ -249,12 +249,12 @@ export default class {
 
       if (!config || tagQueryHash) {
         tags.push(format('queryHash:%s',
-        tagQueryHash.join('|')));
+        tagQueryHash.join('/').slice(0, 200)));
       }
 
       if (!config || tagOperationName) {
         tags.push(format('operationName:%s',
-        tagOperationName.join('|')));
+        tagOperationName.join('/').slice(0, 200)));
       }
 
       onFinished(res, () => {
