@@ -60,7 +60,7 @@ export default class {
    * @return float
    */
   get sampleRate() {
-    return this._sampleRate ? this._sampleRate : 1;
+    return this._sampleRate ? this._sampleRate : 0.1;
   }
 
   /**
