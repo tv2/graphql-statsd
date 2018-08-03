@@ -247,12 +247,12 @@ export default class {
 
       var tags = [];
 
-      if (!config || tagQueryHash) {
+      if (!config || config.tagQueryHash) {
         tags.push(format('queryHash:%s',
         tagQueryHash.join('/').slice(0, 200)));
       }
 
-      if (!config || tagOperationName) {
+      if (!config || config.tagOperationName) {
         tags.push(format('operationName:%s',
         tagOperationName.join('/').slice(0, 200)));
       }
