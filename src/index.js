@@ -1,8 +1,8 @@
 import onFinished from 'on-finished';
-import {format} from 'util';
+import { format } from 'util';
 import clockit from 'clockit';
 import md5 from 'md5';
-import {getNamedType} from 'graphql';
+import { getNamedType } from 'graphql';
 
 /**
  * A default client
@@ -86,7 +86,7 @@ export default class {
     return (p, a, ctx, resolverInfo) => {
       const resolveTimer = clockit.start();
       const context = ctx.graphqlStatsdContext ?
-          ctx.graphqlStatsdContext : undefined;
+        ctx.graphqlStatsdContext : undefined;
       if (!context) {
         console.warn('graphqlStatsd: Context is undefined!');
       }
@@ -106,8 +106,8 @@ export default class {
         if (context) {
           if (Array.isArray(context.queries)) {
             context.operationName = context
-                .queries[context.queryHash]
-                .operationName;
+              .queries[context.queryHash]
+              .operationName;
           }
           tags.push(format('queryHash:%s', context.queryHash));
           tags.push(format('operationName:%s', context.operationName));
@@ -123,9 +123,9 @@ export default class {
         );
         if (err) {
           this.statsdClient.increment('resolve_error',
-           1,
-           this.sampleRate,
-           tags);
+            1,
+            this.sampleRate,
+            tags);
         }
       };
 
@@ -224,6 +224,18 @@ export default class {
       let tagQueryHash = [];
       let tagOperationName = [];
 
+      // We should be able to seperate the queries, whether they are given by GET or POST.
+      // This should probably be rewritten, as Apollo should be able to give us the
+      // query object(s) instead of intercepting them manually through the request.
+
+      if (req.query && req.query.query) {
+        queryHash = md5(req.query.query);
+        operationName = req.query.operationName || ''
+
+        tagQueryHash.push(queryHash);
+        tagOperationName.push(operationName)
+      }
+
       // In case the incoming body is bundled queries.
       if (Array.isArray(req.body)) {
         req.graphqlStatsdContext = {};
@@ -235,7 +247,7 @@ export default class {
           tagQueryHash.push(queryObject.queryHash);
           tagOperationName.push(queryObject.operationName);
         });
-      } else {
+      } else if (req.body.query) {
         req.graphqlStatsdContext = {
           queryHash: req.body.query ? md5(req.body.query) : null,
           operationName: req.body.operationName ? req.body.operationName : null
@@ -249,12 +261,12 @@ export default class {
 
       if (!config || config.tagQueryHash) {
         tags.push(format('queryHash:%s',
-        tagQueryHash.join('/').slice(0, 200)));
+          tagQueryHash.join('/').slice(0, 200)));
       }
 
       if (!config || config.tagOperationName) {
         tags.push(format('operationName:%s',
-        tagOperationName.join('/').slice(0, 200)));
+          tagOperationName.join('/').slice(0, 200)));
       }
 
       onFinished(res, () => {
