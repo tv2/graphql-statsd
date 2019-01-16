@@ -232,8 +232,7 @@ export default class {
         let operationName = req.query.operationName || '';
 
         req.graphqlStatsdContext = {
-          queryHash: queryHash,
-          operationName: operationName
+          queryHash, operationName
         };
 
         tagQueryHash.push(queryHash);
