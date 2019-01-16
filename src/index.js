@@ -231,6 +231,11 @@ export default class {
         let queryHash = md5(req.query.query);
         let operationName = req.query.operationName || '';
 
+        req.graphqlStatsdContext = {
+          queryHash: queryHash,
+          operationName: operationName
+        };
+
         tagQueryHash.push(queryHash);
         tagOperationName.push(operationName);
       }
