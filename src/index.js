@@ -224,9 +224,8 @@ export default class {
       let tagQueryHash = [];
       let tagOperationName = [];
 
-      // We should be able to seperate the queries, whether they are given by GET or POST.
-      // This should probably be rewritten, as Apollo should be able to give us the
-      // query object(s) instead of intercepting them manually through the request.
+      // We should be able to separate the queries, 
+      // whether they are given by GET or POST.
 
       if (req.query && req.query.query) {
         queryHash = md5(req.query.query);

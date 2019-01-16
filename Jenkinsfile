@@ -50,6 +50,6 @@ node {
     
 
   } catch(Exception e) {
-    sendNotificationFailed('jems', e)
+    sendNotificationFailed('jesr', e)
   }
 }
