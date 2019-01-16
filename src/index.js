@@ -224,15 +224,15 @@ export default class {
       let tagQueryHash = [];
       let tagOperationName = [];
 
-      // We should be able to separate the queries, 
+      // We should be able to separate the queries,
       // whether they are given by GET or POST.
 
       if (req.query && req.query.query) {
-        queryHash = md5(req.query.query);
-        operationName = req.query.operationName || ''
+        let queryHash = md5(req.query.query);
+        let operationName = req.query.operationName || '';
 
         tagQueryHash.push(queryHash);
-        tagOperationName.push(operationName)
+        tagOperationName.push(operationName);
       }
 
       // In case the incoming body is bundled queries.
