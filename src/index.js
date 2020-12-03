@@ -37,7 +37,8 @@ export default class {
    * @param  object statsdClient
    * @return void
    */
-  constructor(statsdClient = getDefaultClient()) {
+  constructor(statsdClient = getDefaultClient(),
+              complexityCalculator) {
     if (!statsdClient) {
       throw new Error('StatsdClient is required');
     }
