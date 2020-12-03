@@ -26,6 +26,13 @@ const getDefaultClient = () => {
       if (callback && typeof callback === 'function') {
         return callback();
       }
+    },
+    histogram: (name, value, sampleRate, tags, callback) => {
+      console.info('graphqlStatsd:histogram');
+      console.log(name, value, sampleRate, tags);
+      if (callback && typeof callback === 'function') {
+        return callback();
+      }
     }
   };
 };
@@ -35,6 +42,7 @@ export default class {
   /**
    * Create a new GraphQL Statsd Client
    * @param  object statsdClient
+   * @param  function complexityCalculator
    * @return void
    */
   constructor(statsdClient = getDefaultClient(),
@@ -52,7 +60,18 @@ export default class {
       throw new Error('StatsdClient must implement increment method');
     }
 
+    if (!statsdClient.histogram ||
+        typeof statsdClient.histogram !== 'function') {
+      throw new Error('StatsdClient must implement histogram method');
+    }
+
+    if (complexityCalculator &&
+        typeof complexityCalculator !== 'function') {
+      throw new Error('If complexityCalculator is provided it must be a function');
+    }
+
     this.statsdClient = statsdClient;
+    this.complexityCalculator = complexityCalculator;
   }
 
   /**
@@ -233,7 +252,8 @@ export default class {
         let operationName = req.query.operationName || '';
 
         req.graphqlStatsdContext = {
-          queryHash, operationName
+          queryHash, operationName,
+          complexity: this.complexityCalculator ? this.complexityCalculator(req.query.query, req.query.variableValues) : null
         };
 
         tagQueryHash.push(queryHash);
@@ -254,7 +274,8 @@ export default class {
       } else if (req.body.query) {
         req.graphqlStatsdContext = {
           queryHash: req.body.query ? md5(req.body.query) : null,
-          operationName: req.body.operationName ? req.body.operationName : null
+          operationName: req.body.operationName ? req.body.operationName : null,
+          complexity: this.complexityCalculator ? this.complexityCalculator(req.body.query, req.body.variableValues) : null
         };
 
         tagQueryHash.push(req.graphqlStatsdContext.queryHash);
@@ -280,6 +301,14 @@ export default class {
           this.sampleRate,
           tags
         );
+        if (req.graphqlStatsdContext.complexity) {
+          this.statsdClient.histogram(
+              'query_complexity',
+              req.graphqlStatsdContext.complexity,
+              this.sampleRate,
+              tags
+          );
+        }
       });
       next();
     };
