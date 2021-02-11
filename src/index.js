@@ -67,7 +67,8 @@ export default class {
 
     if (complexityCalculator &&
         typeof complexityCalculator !== 'function') {
-      throw new Error('If complexityCalculator is provided it must be a function');
+      throw new Error(
+          'If complexityCalculator is provided it must be a function');
     }
 
     this.statsdClient = statsdClient;
@@ -253,7 +254,8 @@ export default class {
 
         req.graphqlStatsdContext = {
           queryHash, operationName,
-          complexity: this.complexityCalculator ? this.complexityCalculator(req.query.query, req.query.variableValues) : null
+          complexity: this.complexityCalculator ? this.complexityCalculator(
+              req.query.query, req.query.variableValues) : null
         };
 
         tagQueryHash.push(queryHash);
@@ -275,7 +277,8 @@ export default class {
         req.graphqlStatsdContext = {
           queryHash: req.body.query ? md5(req.body.query) : null,
           operationName: req.body.operationName ? req.body.operationName : null,
-          complexity: this.complexityCalculator ? this.complexityCalculator(req.body.query, req.body.variableValues) : null
+          complexity: this.complexityCalculator ? this.complexityCalculator(
+              req.body.query, req.body.variableValues) : null
         };
 
         tagQueryHash.push(req.graphqlStatsdContext.queryHash);
