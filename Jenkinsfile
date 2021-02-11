@@ -43,7 +43,7 @@ node {
       stage('Publish to Artifactory') {
         conf['maxBuilds'] = 5
         conf['archive-name'] = "*.tgz"
-        conf['repository'] = "npm/dk/tv2/play/backend/statsd/play-lib-graphql-statsd/"
+        conf['repository'] = "npm-local/dk/tv2/play/backend/statsd/play-lib-graphql-statsd/"
         publishToArtifactory(conf)
         }
       }
