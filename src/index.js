@@ -255,7 +255,7 @@ export default class {
         req.graphqlStatsdContext = {
           queryHash, operationName,
           complexity: this.complexityCalculator ? this.complexityCalculator(
-              req.query.query, req.query.variableValues) : null
+              req.query.query, req.query.variables) : null
         };
 
         tagQueryHash.push(queryHash);
@@ -278,7 +278,7 @@ export default class {
           queryHash: req.body.query ? md5(req.body.query) : null,
           operationName: req.body.operationName ? req.body.operationName : null,
           complexity: this.complexityCalculator ? this.complexityCalculator(
-              req.body.query, req.body.variableValues) : null
+              req.body.query, req.body.variables) : null
         };
 
         tagQueryHash.push(req.graphqlStatsdContext.queryHash);
