@@ -298,19 +298,24 @@ export default class {
       }
 
       onFinished(res, () => {
-        this.statsdClient.timing(
-          'response_time',
-          timer.ms,
-          this.sampleRate,
-          tags
-        );
-        if (req.graphqlStatsdContext.complexity) {
-          this.statsdClient.histogram(
-              'query_complexity',
-              req.graphqlStatsdContext.complexity,
+        try {
+          this.statsdClient.timing(
+              'response_time',
+              timer.ms,
               this.sampleRate,
               tags
           );
+          if (req && req.graphqlStatsdContext &&
+              req.graphqlStatsdContext.complexity) {
+            this.statsdClient.histogram(
+                'query_complexity',
+                req.graphqlStatsdContext.complexity,
+                this.sampleRate,
+                tags
+            );
+          }
+        } catch (err) {
+          console.error('graphqlStatsd: Error during onFinished! ' + err);
         }
       });
       next();
