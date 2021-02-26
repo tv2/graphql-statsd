@@ -84,7 +84,6 @@ export default class {
    */
   decorateResolver(resolver, fieldInfo) {
     return (p, a, ctx, resolverInfo) => {
-      const resolveTimer = clockit.start();
       const context = ctx.graphqlStatsdContext ?
         ctx.graphqlStatsdContext : undefined;
       if (!context) {
@@ -115,12 +114,6 @@ export default class {
         tags.push(format('resolveName:%s', fieldInfo.name ?
           fieldInfo.name : 'undefined'));
 
-        this.statsdClient.timing(
-          'resolve_time',
-          resolveTimer.ms,
-          this.sampleRate,
-          tags
-        );
         if (err) {
           this.statsdClient.increment('resolve_error',
             1,
